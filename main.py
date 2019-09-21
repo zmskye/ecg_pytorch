@@ -180,8 +180,8 @@ def test(args):
             df = pd.read_csv(file_path, sep=' ').values
 
             df = add_4(df)
-            age = test_age_sex[id.split('.')[0]]['age']
-            sex = test_age_sex[id.split('.')[0]]['sex']
+            age = test_age_sex[id.split('.')[0]]['age'].unsqueeze(0).to(device)
+            sex = test_age_sex[id.split('.')[0]]['sex'].unsqueeze(0).to(device)
 
             x = transform(df).unsqueeze(0).to(device)
             output = torch.sigmoid(model(x, age, sex)).squeeze().cpu().numpy()
