@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 from dataset import ECGDataset
 from config import config
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '4'
+os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 torch.manual_seed(41)
@@ -22,11 +22,11 @@ torch.cuda.manual_seed(41)
 
 
 # 保存当前模型的权重，并且更新最佳的模型权重
-def save_ckpt(state, is_best, model_save_dir):
+def save_ckpt(state, best_f1, val_f1, model_save_dir):
     current_w = os.path.join(model_save_dir, config.current_w)
-    best_w = os.path.join(model_save_dir, config.best_w)
+    best_w = os.path.join(model_save_dir, config.best_w.format(val_f1))
     torch.save(state, current_w)
-    if is_best: shutil.copyfile(current_w, best_w)
+    if best_f1 < val_f1: shutil.copyfile(current_w, best_w)
 
 
 def train_epoch(model, optimizer, criterion, train_dataloader, show_interval=10):
@@ -129,7 +129,7 @@ def train(args):
         logger.log_value('val_f1', val_f1, step=epoch)
         state = {"state_dict": model.state_dict(), "epoch": epoch, "loss": val_loss, 'f1': val_f1, 'lr': lr,
                  'stage': stage}
-        save_ckpt(state, best_f1 < val_f1, model_save_dir)
+        save_ckpt(state, best_f1, val_f1, model_save_dir)
         best_f1 = max(best_f1, val_f1)
         if epoch in config.stage_epoch:
             stage += 1
