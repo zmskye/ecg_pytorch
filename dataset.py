@@ -67,6 +67,16 @@ def transform(sig, train=False):
     return sig
 
 
+def add_4(data):
+    III = data[:, 1] - data[:, 0]
+    aVR = -(data[:, 0] + data[:, 1]) / 2
+    aVL = data[:, 0] - data[:, 1] / 2
+    aVF = data[:, 1] - data[:, 0] / 2
+    dst_data = np.concatenate(
+        (data, III.reshape(-1, 1), aVR.reshape(-1, 1), aVL.reshape(-1, 1), aVF.reshape(-1, 1)), axis=1)
+    return dst_data
+
+
 class ECGDataset(Dataset):
     """
     A generic data loader where the samples are arranged in this way:
@@ -88,6 +98,7 @@ class ECGDataset(Dataset):
         fid = self.data[index]
         file_path = os.path.join(config.train_dir, fid)
         df = pd.read_csv(file_path, sep=' ').values
+        df = add_4(df)
         x = transform(df, self.train)
         target = np.zeros(config.num_classes)
         target[self.file2idx[fid]] = 1
