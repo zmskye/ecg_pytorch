@@ -158,6 +158,10 @@ def val(args):
 def test(args):
     from dataset import transform
     from data_process import name2index
+    import pickle
+
+    test_age_sex = pickle.load(open(config.test_age_sex, 'rb'))
+
     name2idx = name2index(config.arrythmia)
     idx2name = {idx: name for name, idx in name2idx.items()}
     utils.mkdirs(config.sub_dir)
@@ -174,9 +178,13 @@ def test(args):
             id = line.split('\t')[0]
             file_path = os.path.join(config.test_dir, id)
             df = pd.read_csv(file_path, sep=' ').values
+
             df = add_4(df)
+            age = test_age_sex[id.split('.')[0]]['age']
+            sex = test_age_sex[id.split('.')[0]]['sex']
+
             x = transform(df).unsqueeze(0).to(device)
-            output = torch.sigmoid(model(x)).squeeze().cpu().numpy()
+            output = torch.sigmoid(model(x, age, sex)).squeeze().cpu().numpy()
             ixs = [i for i, out in enumerate(output) if out > 0.5]
             for i in ixs:
                 fout.write("\t" + idx2name[i])
