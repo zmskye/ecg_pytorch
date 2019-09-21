@@ -11,7 +11,7 @@ import pandas as pd
 from tensorboard_logger import Logger
 from torch import nn, optim
 from torch.utils.data import DataLoader
-from dataset import ECGDataset
+from dataset import ECGDataset, add_4
 from config import config
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '7'
@@ -174,6 +174,7 @@ def test(args):
             id = line.split('\t')[0]
             file_path = os.path.join(config.test_dir, id)
             df = pd.read_csv(file_path, sep=' ').values
+            df = add_4(df)
             x = transform(df).unsqueeze(0).to(device)
             output = torch.sigmoid(model(x)).squeeze().cpu().numpy()
             ixs = [i for i, out in enumerate(output) if out > 0.5]
