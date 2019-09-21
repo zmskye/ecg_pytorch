@@ -82,10 +82,7 @@ class ECGDataset(Dataset):
         self.file2idx = dd['file2idx']
         self.wc = 1. / np.log(dd['wc'])
 
-        if train:
-            self.age_sex = pickle.load(open(config.train_age_sex, 'rb'))
-        else:
-            self.age_sex = pickle.load(open(config.test_age_sex, 'rb'))
+        self.age_sex = pickle.load(open(config.train_age_sex, 'rb'))
 
     def __getitem__(self, index):
         fid = self.data[index]
