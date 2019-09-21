@@ -96,8 +96,8 @@ class ECGDataset(Dataset):
         target[self.file2idx[fid]] = 1
         target = torch.tensor(target, dtype=torch.float32)
 
-        age = self.age_sex[fid.split('.')[0]]['age']
-        sex = self.age_sex[fid.split('.')[0]]['sex']
+        age = self.age_sex[fid.split('.')[0]]['age'].astype(np.float32)
+        sex = self.age_sex[fid.split('.')[0]]['sex'].astype(np.float32)
 
         return x, age, sex, target
 
