@@ -27,7 +27,7 @@ def name2index(path):
     return name2indx
 
 
-def split_data(file2idx, val_ratio=0.2):
+def split_data(file2idx, val_ratio=0.1):
     '''
     划分数据集,val需保证每类至少有1个样本
     :param file2idx:
