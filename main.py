@@ -14,9 +14,8 @@ from torch.utils.data import DataLoader
 from dataset import ECGDataset
 from config import config
 
-os.environ['CUDA_VISIBLE_DEVICES']='4'
+os.environ['CUDA_VISIBLE_DEVICES'] = '4'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 torch.manual_seed(41)
 torch.cuda.manual_seed(41)
@@ -33,13 +32,15 @@ def save_ckpt(state, is_best, model_save_dir):
 def train_epoch(model, optimizer, criterion, train_dataloader, show_interval=10):
     model.train()
     f1_meter, loss_meter, it_count = 0, 0, 0
-    for inputs, target in train_dataloader:
+    for inputs, age, sex, target in train_dataloader:
+        age = age.to(device)
+        sex = sex.to(device)
         inputs = inputs.to(device)
         target = target.to(device)
         # zero the parameter gradients
         optimizer.zero_grad()
         # forward
-        output = model(inputs)
+        output = model(inputs,age,sex)
         loss = criterion(output, target)
         loss.backward()
         optimizer.step()
@@ -136,7 +137,8 @@ def train(args):
             print("*" * 10, "step into stage%02d lr %.3ef" % (stage, lr))
             utils.adjust_learning_rate(optimizer, lr)
 
-#用于测试加载模型
+
+# 用于测试加载模型
 def val(args):
     list_threhold = [0.5]
     model = getattr(models, config.model_name)()
@@ -149,7 +151,8 @@ def val(args):
         val_loss, val_f1 = val_epoch(model, criterion, val_dataloader, threshold)
         print('threshold %.2f val_loss:%0.3e val_f1:%.3f\n' % (threshold, val_loss, val_f1))
 
-#提交结果使用
+
+# 提交结果使用
 def test(args):
     from dataset import transform
     from data_process import name2index
@@ -176,7 +179,6 @@ def test(args):
                 fout.write("\t" + idx2name[i])
             fout.write('\n')
     fout.close()
-
 
 
 if __name__ == '__main__':
