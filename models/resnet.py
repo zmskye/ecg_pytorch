@@ -5,6 +5,7 @@
 @ author: javis
 '''
 
+import torch
 import torch.nn as nn
 import math
 import torch.utils.model_zoo as model_zoo
@@ -118,6 +119,9 @@ class ResNet(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool1d(1)
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
+        self.age_fc = nn.Linear(9, 512)
+        self.sex_fc = nn.Linear(3, 512)
+
         for m in self.modules():
             if isinstance(m, nn.Conv1d):
                 n = m.kernel_size[0] * m.kernel_size[0] * m.out_channels
@@ -143,9 +147,7 @@ class ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def forward(self, x):
-        #import pdb
-        #pdb.set_trace()
+    def forward(self, x, age, sex):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -155,8 +157,14 @@ class ResNet(nn.Module):
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-        x = self.avgpool(x)
+        x = self.avgpool(x)  # [bs,200,512,1]
         x = x.view(x.size(0), -1)
+
+        age = self.age_fc(age)
+        sex = self.sex_fc(sex)
+
+        x = torch.cat([x, age, sex], 1)
+
         x = self.fc(x)
 
         return x
@@ -223,8 +231,6 @@ def resnet152(pretrained=False, **kwargs):
 
 
 if __name__ == '__main__':
-    import torch
-
     x = torch.randn(1, 8, 2048)
     m = resnet34()
     m(x)
