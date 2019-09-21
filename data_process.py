@@ -10,6 +10,7 @@ import os, torch
 import numpy as np
 from config import config
 import pickle
+
 # 保证每次划分数据一致
 np.random.seed(41)
 
@@ -81,10 +82,10 @@ def count_labels(data, file2idx):
 def train(name2idx, idx2name):
     file2idx = file2index(config.train_label, name2idx)
     train, val = split_data(file2idx)
-    wc=count_labels(train,file2idx)
+    wc = count_labels(train, file2idx)
     print(wc)
-    dd = {'train': train, 'val': val, "idx2name": idx2name, 'file2idx': file2idx,'wc':wc}
-    pickle.dump(dd, open('data/dd.pkl','wb'))
+    dd = {'train': train, 'val': val, "idx2name": idx2name, 'file2idx': file2idx, 'wc': wc}
+    pickle.dump(dd, open('data/dd.pkl', 'wb'))
     torch.save(dd, config.train_data)
 
 

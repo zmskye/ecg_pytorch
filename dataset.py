@@ -12,6 +12,7 @@ from config import config
 from torch.utils.data import Dataset
 from sklearn.preprocessing import scale
 from scipy import signal
+import pickle
 
 
 def resample(sig, target_point_num=None):
@@ -24,10 +25,12 @@ def resample(sig, target_point_num=None):
     sig = signal.resample(sig, target_point_num) if target_point_num else sig
     return sig
 
+
 def scaling(X, sigma=0.1):
     scalingFactor = np.random.normal(loc=1.0, scale=sigma, size=(1, X.shape[1]))
     myNoise = np.matmul(np.ones((X.shape[0], 1)), scalingFactor)
     return X * myNoise
+
 
 def verflip(sig):
     '''
@@ -36,6 +39,7 @@ def verflip(sig):
     :return:
     '''
     return sig[::-1, :]
+
 
 def shift(sig, interval=20):
     '''
@@ -78,6 +82,11 @@ class ECGDataset(Dataset):
         self.file2idx = dd['file2idx']
         self.wc = 1. / np.log(dd['wc'])
 
+        if train:
+            self.age_sex = pickle.load(open(config.train_age_sex, 'rb'))
+        else:
+            self.age_sex = pickle.load(open(config.test_age_sex, 'rb'))
+
     def __getitem__(self, index):
         fid = self.data[index]
         file_path = os.path.join(config.train_dir, fid)
@@ -86,7 +95,11 @@ class ECGDataset(Dataset):
         target = np.zeros(config.num_classes)
         target[self.file2idx[fid]] = 1
         target = torch.tensor(target, dtype=torch.float32)
-        return x, target
+
+        age = self.age_sex[fid.split['.'][0]]['age']
+        sex = self.age_sex[fid.split['.'][0]]['sex']
+
+        return [x, age, sex], target
 
     def __len__(self):
         return len(self.data)
