@@ -24,7 +24,7 @@ torch.cuda.manual_seed(41)
 # 保存当前模型的权重，并且更新最佳的模型权重
 def save_ckpt(state, best_f1, val_f1, model_save_dir):
     current_w = os.path.join(model_save_dir, config.current_w)
-    best_w = os.path.join(model_save_dir, config.best_w.format(val_f1))
+    best_w = os.path.join(model_save_dir, config.best_w)
     torch.save(state, current_w)
     if best_f1 < val_f1: shutil.copyfile(current_w, best_w)
 

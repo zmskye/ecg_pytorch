@@ -43,7 +43,7 @@ class Config:
     # 保存模型当前epoch的权重
     current_w = 'current_w.pth'
     # 保存最佳的权重
-    best_w = 'best_{}.pth'
+    best_w = 'best_w.pth'
     # 学习率衰减 lr/=lr_decay
     lr_decay = 10
 
