@@ -14,7 +14,9 @@ from torch.utils.data import DataLoader
 from dataset import ECGDataset
 from config import config
 
+os.environ['CUDA_VISIBLE_DEVICES']='4'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 torch.manual_seed(41)
 torch.cuda.manual_seed(41)

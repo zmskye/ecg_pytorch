@@ -11,8 +11,8 @@ class Config:
     # for data_process.py
     #root = r'D:\ECG'
     root = r'data'
-    train_dir = os.path.join(root, 'hf_round1_train/train')
-    test_dir = os.path.join(root, 'hf_round1_testA/testA')
+    train_dir = os.path.join(root, 'train')
+    test_dir = os.path.join(root, 'testA')
     train_label = os.path.join(root, 'hf_round1_label.txt')
     test_label = os.path.join(root, 'hf_round1_subA.txt')
     arrythmia = os.path.join(root, 'hf_round1_arrythmia.txt')
@@ -24,7 +24,7 @@ class Config:
     #在第几个epoch进行到下一个state,调整lr
     stage_epoch = [32,64,128]
     #训练时的batch大小
-    batch_size = 64
+    batch_size = 200
     #label的类别数
     num_classes = 55
     #最大训练多少个epoch

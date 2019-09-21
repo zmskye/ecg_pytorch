@@ -9,7 +9,7 @@
 import os, torch
 import numpy as np
 from config import config
-
+import pickle
 # 保证每次划分数据一致
 np.random.seed(41)
 
@@ -27,7 +27,7 @@ def name2index(path):
     return name2indx
 
 
-def split_data(file2idx, val_ratio=0.1):
+def split_data(file2idx, val_ratio=0.2):
     '''
     划分数据集,val需保证每类至少有1个样本
     :param file2idx:
@@ -84,6 +84,7 @@ def train(name2idx, idx2name):
     wc=count_labels(train,file2idx)
     print(wc)
     dd = {'train': train, 'val': val, "idx2name": idx2name, 'file2idx': file2idx,'wc':wc}
+    pickle.dump(dd, open('data/dd.pkl','wb'))
     torch.save(dd, config.train_data)
 
 
