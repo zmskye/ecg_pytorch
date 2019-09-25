@@ -121,6 +121,7 @@ class ResNet(nn.Module):
 
         self.age_fc = nn.Linear(9, 64)
         self.sex_fc = nn.Linear(3, 64)
+        self.id_fc = nn.Linear(1, 256)
 
         for m in self.modules():
             if isinstance(m, nn.Conv1d):
@@ -147,7 +148,7 @@ class ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def forward(self, x, age, sex):
+    def forward(self, x, age, sex, id):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -156,14 +157,15 @@ class ResNet(nn.Module):
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
-        x = self.layer4(x)
+        x = self.layer4(x)  # [bs,200,512,64]
         x = self.avgpool(x)  # [bs,200,512,1]
         x = x.view(x.size(0), -1)
 
         age = self.age_fc(age)
         sex = self.sex_fc(sex)
+        id = self.id_fc(id)
 
-        x = torch.cat([x, age, sex], 1)
+        x = torch.cat([x, age, sex, id], 1)
 
         x = self.fc(x)
 

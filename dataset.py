@@ -107,7 +107,9 @@ class ECGDataset(Dataset):
         age = self.age_sex[fid.split('.')[0]]['age'].astype(np.float32)
         sex = self.age_sex[fid.split('.')[0]]['sex'].astype(np.float32)
 
-        return x, age, sex, target
+        id = fid.split('.')[0]
+
+        return x, age, sex, target,id
 
     def __len__(self):
         return len(self.data)

@@ -32,15 +32,16 @@ def save_ckpt(state, best_f1, val_f1, model_save_dir):
 def train_epoch(model, optimizer, criterion, train_dataloader, show_interval=10):
     model.train()
     f1_meter, loss_meter, it_count = 0, 0, 0
-    for inputs, age, sex, target in train_dataloader:
+    for inputs, age, sex, target, id in train_dataloader:
         age = age.to(device)
         sex = sex.to(device)
         inputs = inputs.to(device)
         target = target.to(device)
+        id = id.to(device)
         # zero the parameter gradients
         optimizer.zero_grad()
         # forward
-        output = model(inputs, age, sex)
+        output = model(inputs, age, sex, id)
         loss = criterion(output, target)
         loss.backward()
         optimizer.step()
@@ -159,6 +160,7 @@ def test(args):
     from dataset import transform
     from data_process import name2index
     import pickle
+    from tqdm import tqdm
 
     test_age_sex = pickle.load(open(config.test_age_sex, 'rb'))
 
@@ -173,7 +175,7 @@ def test(args):
     sub_file = '%s/subA_%s.txt' % (config.sub_dir, time.strftime("%Y%m%d%H%M"))
     fout = open(sub_file, 'w', encoding='utf-8')
     with torch.no_grad():
-        for line in open(config.test_label, encoding='utf-8'):
+        for line in tqdm(open(config.test_label, encoding='utf-8')):
             fout.write(line.strip('\n'))
             id = line.split('\t')[0]
             file_path = os.path.join(config.test_dir, id)
