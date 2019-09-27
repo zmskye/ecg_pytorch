@@ -102,6 +102,8 @@ class ECGDataset(Dataset):
 
     def __getitem__(self, index):
         fid = self.data[index]
+        if 'txt' not in fid:
+            fid += '.txt'
         file_path = os.path.join(config.train_dir, fid)
         df = pd.read_csv(file_path, sep=' ').values
         df = add_4(df)
