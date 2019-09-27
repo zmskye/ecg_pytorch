@@ -87,7 +87,13 @@ class ECGDataset(Dataset):
         super(ECGDataset, self).__init__()
         dd = torch.load(config.train_data)
         self.train = train
+
         self.data = dd['train'] if train else dd['val']
+
+        adv_path = '/DATA/disk1/zhangming6/projects/ecg_hf/res/data/dl_full/adv_over_100.pkl'
+        adv_list = pickle.load(open(adv_path, 'rb'))
+        self.data = adv_list['train'] if train else adv_list['val']
+
         self.idx2name = dd['idx2name']
         self.file2idx = dd['file2idx']
         self.wc = 1. / np.log(dd['wc'])
