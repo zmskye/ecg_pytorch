@@ -32,16 +32,15 @@ def save_ckpt(state, best_f1, val_f1, model_save_dir):
 def train_epoch(model, optimizer, criterion, train_dataloader, show_interval=10):
     model.train()
     f1_meter, loss_meter, it_count = 0, 0, 0
-    for inputs, age, sex, target, id in train_dataloader:
+    for inputs, age, sex, target in train_dataloader:
         age = age.to(device)
         sex = sex.to(device)
         inputs = inputs.to(device)
         target = target.to(device)
-        id = id.to(device)
         # zero the parameter gradients
         optimizer.zero_grad()
         # forward
-        output = model(inputs, age, sex, id)
+        output = model(inputs, age, sex)
         loss = criterion(output, target)
         loss.backward()
         optimizer.step()
@@ -58,13 +57,12 @@ def val_epoch(model, criterion, val_dataloader, threshold=0.5):
     model.eval()
     f1_meter, loss_meter, it_count = 0, 0, 0
     with torch.no_grad():
-        for inputs, age, sex, target,idx in val_dataloader:
+        for inputs, age, sex, target in val_dataloader:
             age = age.to(device)
             sex = sex.to(device)
             inputs = inputs.to(device)
             target = target.to(device)
-            idx=idx.to(device)
-            output = model(inputs, age, sex,idx)
+            output = model(inputs, age, sex)
             loss = criterion(output, target)
             loss_meter += loss.item()
             it_count += 1

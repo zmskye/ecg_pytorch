@@ -148,7 +148,7 @@ class ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def forward(self, x, age, sex, id):
+    def forward(self, x, age, sex):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -163,9 +163,8 @@ class ResNet(nn.Module):
 
         age = self.age_fc(age)
         sex = self.sex_fc(sex)
-        id = self.id_fc(id)
 
-        x = torch.cat([x, age, sex, id], 1)
+        x = torch.cat([x, age, sex], 1)
 
         x = self.fc(x)
 
